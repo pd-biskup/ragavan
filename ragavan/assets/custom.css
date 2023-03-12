@@ -1,0 +1,22 @@
+html,
+body {
+    margin: 0;
+}
+
+.app-container {
+    padding: 10px 10px 10px 10px;
+}
+
+.controls-container {
+    padding: 10px 10px 10px 10px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.graph-container {
+    padding: 10px 10px 10px 10px;
+}
+
+.dropdown {
+    width: 200px;
+}

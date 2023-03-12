@@ -1,0 +1,11 @@
+services:
+  ragavan:
+    image: ragavan
+    ports:
+      - 8050:8050
+    environment:
+      - RAGAVAN_DEBUG
+    volumes:
+      - ragavan:/root/.cache/ragavan
+volumes:
+  ragavan:
