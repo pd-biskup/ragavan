@@ -40,3 +40,16 @@ default_selected_event_types = [
     "QuickDraft",
     "TradDraft",
 ]
+
+color_pairs_full = [
+    "Azorius (WU)",
+    "Dimir (UB)",
+    "Rakdos (BR)",
+    "Gruul (RG)",
+    "Selesnya (GW)",
+    "Orzhov (WB)",
+    "Golgari (BG)",
+    "Simic (GU)",
+    "Izzet (UR)",
+    "Boros (RW)",
+]
