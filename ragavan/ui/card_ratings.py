@@ -49,6 +49,12 @@ def layout():
                         options=filters["colors"][1:],
                         clearable=True,
                     ),
+                    dcc.Checklist(
+                        id="card-ratings-full-input",
+                        options=["Show all"],
+                        value=[],
+                        inline=True,
+                    ),
                 ],
             ),
             html.Div(id="card-ratings-graph"),
@@ -122,3 +128,16 @@ def date_range(expansion, event_type):
     start_date = storage.get_first_day(expansion, event_type) + timedelta(weeks=2)
     end_date = datetime.now().date()
     return (start_date, end_date)
+
+
+@app.callback(
+    Output("card-ratings-expansion-input", "options"),
+    Output("card-ratings-event-type-input", "options"),
+    Input("card-ratings-full-input", "value"),
+)
+def show_all(full):
+    """Switch controls to and from full mode"""
+    if full:
+        filters = storage.get_filters()
+        return (filters["expansions"], filters["formats"])
+    return (default_expansions, default_event_types)

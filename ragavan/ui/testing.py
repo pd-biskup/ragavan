@@ -9,7 +9,7 @@ from ragavan.storage import storage
 
 def layout():
     """Create component"""
-    data = storage.get_card_ratings(
-        "ONE", "PremierDraft", date(2023, 2, 1), date(2023, 3, 1)
+    data = storage.get_color_ratings(
+        "STX", "QuickDraft", date(2020, 2, 1), date(2023, 3, 1)
     )
     return html.Div(children=[df_to_dt(data)])

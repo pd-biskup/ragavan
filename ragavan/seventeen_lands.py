@@ -19,7 +19,7 @@ URL_PLAY_DRAW = f"{URL_BASE}/data/play_draw"
 
 def _fetch(url: str, params: dict = None) -> dict:
     log.info("fetching %s from %s", params, url)
-    resp = requests.get(url, params=params, timeout=5)
+    resp = requests.get(url, params=params, timeout=(5, 15))
     return resp.json()
 
 

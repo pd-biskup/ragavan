@@ -32,6 +32,12 @@ def layout():
                         value=default_selected_event_types,
                         inline=True,
                     ),
+                    dcc.Checklist(
+                        id="play-draw-full-input",
+                        options=["Show all"],
+                        value=[],
+                        inline=True,
+                    ),
                 ],
                 className="controls-container",
             ),
@@ -62,3 +68,16 @@ def play_draw_graph(expansions, event_types):
     )
     fig.update_traces(textposition="top right")
     return dcc.Graph(figure=fig)
+
+
+@app.callback(
+    Output("play-draw-expansions-input", "options"),
+    Output("play-draw-event-types-input", "options"),
+    Input("play-draw-full-input", "value"),
+)
+def show_all(full):
+    """Switch controls to and from full mode"""
+    if full:
+        filters = storage.get_filters()
+        return (filters["expansions"], filters["formats"])
+    return (default_expansions, default_event_types)
