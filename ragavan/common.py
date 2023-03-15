@@ -1,3 +1,4 @@
+"""Common utils module"""
 from datetime import date
 
 import polars as pl
@@ -5,16 +6,20 @@ from dash.dash_table import DataTable
 from plotly.colors import qualitative as palettes
 
 
-def format_date(date: date) -> str:
-    return date.strftime("%Y-%m-%d")
+def format_date(date_: date) -> str:
+    """Format date object to unambigous string"""
+    return date_.strftime("%Y-%m-%d")
 
 
 beginning_date = date(2019, 1, 1)
 
 
-def df_to_dt(df: pl.DataFrame) -> DataTable:
-    df = df.to_pandas()
-    return DataTable(df.to_dict("records"), [{"name": i, "id": i} for i in df.columns])
+def df_to_dt(data: pl.DataFrame) -> DataTable:
+    """Convert polars DataFrame to dash DataTable"""
+    data = data.to_pandas()
+    records = data.to_dict("records")
+    columns = [{"name": i, "id": i} for i in data.columns]
+    return DataTable(records, columns)
 
 
 color_map = {

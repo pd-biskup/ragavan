@@ -1,3 +1,4 @@
+"""Caching system for 17lands data"""
 import pickle
 from datetime import date, timedelta
 from logging import getLogger
@@ -18,16 +19,21 @@ log = getLogger("storage")
 
 
 class StorageCell:
+    """Cell holding any data and its time of validity"""
+
     def __init__(self, data: Any, lifetime: timedelta = timedelta(days=1)) -> None:
         self.data = data
         self.timestamp = date.today()
         self.lifetime = lifetime
 
     def valid(self) -> date:
+        """Checks if data held by this cell is valid"""
         return date.today() - self.timestamp > self.lifetime
 
 
 class Storage:
+    """Caching and persisting system for 17lands data"""
+
     path = user_cache_path("ragavan", "AcidBishop") / "storage"
 
     def __init__(self) -> None:
@@ -39,6 +45,7 @@ class Storage:
         self._first_day = {}
 
     def save(self) -> None:
+        """Persist cache to disk"""
         log.info("Persisting storage")
         self.path.parent.mkdir(exist_ok=True)
         with open(self.path, "bw") as file:
@@ -46,11 +53,13 @@ class Storage:
 
     @classmethod
     def load(cls) -> "Storage":
+        """Instantiate new Storage object from disk"""
         log.info("Loading storage")
         with open(cls.path, "br") as file:
             return pickle.load(file)
 
     def purge(self) -> None:
+        """Remove all invalid data from cache"""
         if self._filters and self._filters.valid():
             self._filters = None
         if self._play_draw and self._play_draw.valid():
@@ -69,6 +78,7 @@ class Storage:
                 del self._first_day[key]
 
     def get_filters(self) -> dict:
+        """Return filters from cache or download from 17lands if not found"""
         self.purge()
         log.info("retrieving filters")
         if not self._filters:
@@ -84,6 +94,7 @@ class Storage:
         end_date: date,
         combine_splash: bool = False,
     ) -> pl.DataFrame:
+        """Return color ratings data from cache or download from 17lands if not found"""
         self.purge()
         log.info("retrieving color ratings")
         key = f"{expansion}-{event_type}-{format_date(start_date)}-{format_date(end_date)}-{combine_splash}"
@@ -104,6 +115,7 @@ class Storage:
         end_date: date,
         colors: Optional[str] = None,
     ) -> pl.DataFrame:
+        """Return card ratings data from cache or download from 17lands if not found"""
         self.purge()
         log.info("retrieving card ratings")
         key = f"{expansion}-{event_type}-{format_date(start_date)}-{format_date(end_date)}-{colors}"
@@ -131,6 +143,7 @@ class Storage:
     #     return self._card_evaluation_metagame[key].data
 
     def get_play_draw(self) -> pl.DataFrame:
+        """Return play/draw advantage data from cache or download from 17lands if not found"""
         self.purge()
         log.info("retrieving play draw advantage")
         if not self._play_draw:
@@ -171,6 +184,7 @@ class Storage:
         return end_date
 
     def get_first_day(self, expansion: str, event_type: str) -> Optional[date]:
+        """Return first day of format from cache or find it by downloading data from 17lands"""
         self.purge()
         log.info("retriving first day")
         key = f"{expansion}-{event_type}"
@@ -184,5 +198,5 @@ class Storage:
 
 try:
     storage = Storage.load()
-except:
+except (OSError, pickle.UnpicklingError):
     storage = Storage()

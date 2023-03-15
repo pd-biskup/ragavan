@@ -1,3 +1,4 @@
+"""Main layout component of the app"""
 from typing import Any
 
 from dash import dcc, html
@@ -8,6 +9,7 @@ from ragavan.ui import card_ratings, color_ratings, play_draw, testing
 
 
 def layout() -> Any:
+    """Create component"""
     return html.Div(
         children=[
             html.Div(
@@ -32,6 +34,7 @@ def layout() -> Any:
 
 @app.callback(Output("tabs-content", "children"), Input("tabs", "value"))
 def tabs_content(tab: str) -> Any:
+    """Change content of the app based on selected tab"""
     match tab:
         case "play_draw":
             return play_draw.layout()

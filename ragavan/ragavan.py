@@ -1,3 +1,4 @@
+"""Ragavan - MTG limited analysis"""
 from logging import INFO, basicConfig, getLogger
 from os import environ
 
@@ -6,6 +7,7 @@ from ragavan.ui.layout import layout
 
 
 def main():
+    """Main entrypoint of the program"""
     debug = bool(environ.get("RAGAVAN_DEBUG"))
     basicConfig(level=INFO)
     log = getLogger("ragavan")

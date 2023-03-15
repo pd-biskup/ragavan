@@ -1,3 +1,4 @@
+"""Module containing main app object"""
 from dash import Dash
 
 app = Dash(

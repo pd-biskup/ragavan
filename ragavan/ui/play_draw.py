@@ -1,3 +1,4 @@
+"""Play/draw advantage graph component"""
 from dash import dcc, html
 from dash.dependencies import Input, Output
 from plotly import express as px
@@ -14,9 +15,7 @@ from ragavan.storage import storage
 
 
 def layout():
-    data = storage.get_play_draw()
-    expansions = data["expansion"].unique().to_list()
-    event_types = data["event_type"].unique().to_list()
+    """Create component"""
     return html.Div(
         children=[
             html.Div(
@@ -48,6 +47,7 @@ def layout():
     Input("play-draw-event-types-input", "value"),
 )
 def play_draw_graph(expansions, event_types):
+    """Re-generate graph when parameters change"""
     data = storage.get_play_draw()
     data = data.filter(
         col("expansion").is_in(expansions) & col("event_type").is_in(event_types)

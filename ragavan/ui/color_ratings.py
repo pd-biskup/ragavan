@@ -1,3 +1,4 @@
+"""Color ratings graph component"""
 from datetime import datetime, timedelta
 
 from dash import dcc, html
@@ -11,7 +12,7 @@ from ragavan.storage import storage
 
 
 def layout():
-    filters = storage.get_filters()
+    """Create component"""
     return html.Div(
         children=[
             html.Div(
@@ -63,6 +64,7 @@ def layout():
     Input("color-ratings-combine-splash-input", "value"),
 )
 def color_ratings_graph(expansion, event_type, start_date, end_date, combine_splash):
+    """Re-generate graph when parameters change"""
     start_date = datetime.strptime(start_date, "%Y-%m-%d")
     end_date = datetime.strptime(end_date, "%Y-%m-%d")
     only_pairs = combine_splash == "Only Pairs"
