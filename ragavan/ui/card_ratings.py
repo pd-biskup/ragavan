@@ -1,10 +1,11 @@
 """Card ratings graph component"""
 from datetime import datetime, timedelta
 
+import polars as pl
 from dash import dcc, html
 from dash.dependencies import Input, Output
 from plotly import express as px
-from polars import col
+from polars import col, lit
 
 from ragavan.app import app
 from ragavan.common import color_map, default_event_types, default_expansions
@@ -57,6 +58,16 @@ def layout():
                     ),
                 ],
             ),
+            html.Div(
+                className="controls-container",
+                children=[
+                    dcc.Dropdown(
+                        id="card-ratings-filter-input",
+                        style={"width": "1200px"},
+                        multi=True,
+                    )
+                ],
+            ),
             html.Div(id="card-ratings-graph"),
         ]
     )
@@ -69,8 +80,9 @@ def layout():
     Input("card-ratings-date-range-input", "start_date"),
     Input("card-ratings-date-range-input", "end_date"),
     Input("card-ratings-colors-input", "value"),
+    Input("card-ratings-filter-input", "value"),
 )
-def card_ratings_graph(expansion, event_type, start_date, end_date, colors):
+def card_ratings_graph(expansion, event_type, start_date, end_date, colors, filters):
     """Re-generate graph when parameters change"""
     data = storage.get_card_ratings(
         expansion,
@@ -88,6 +100,12 @@ def card_ratings_graph(expansion, event_type, start_date, end_date, colors):
             .apply(lambda x: f"{x*100:.2f}%")
             .alias("gih_winrate")
         )
+    )
+    data = data.with_columns(
+        pl.when(col("name").is_in(filters))
+        .then(lit("selected"))
+        .otherwise(col("rarity"))
+        .alias("rarity")
     )
     height = len(data) * 16
     avg = data["ever_drawn_win_rate"].mean()
@@ -120,14 +138,17 @@ def card_ratings_graph(expansion, event_type, start_date, end_date, colors):
 @app.callback(
     Output("card-ratings-date-range-input", "start_date"),
     Output("card-ratings-date-range-input", "end_date"),
+    Output("card-ratings-filter-input", "options"),
     Input("card-ratings-expansion-input", "value"),
     Input("card-ratings-event-type-input", "value"),
 )
-def date_range(expansion, event_type):
-    """Change date range control values when selected format changes"""
+def update_controls(expansion, event_type):
+    """Change controls values when selected format changes"""
     start_date = storage.get_first_day(expansion, event_type) + timedelta(weeks=2)
     end_date = datetime.now().date()
-    return (start_date, end_date)
+    data = storage.get_card_ratings(expansion, event_type, start_date, end_date)
+    names = list(data.get_column("name"))
+    return (start_date, end_date, names)
 
 
 @app.callback(
