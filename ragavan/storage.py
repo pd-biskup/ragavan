@@ -198,5 +198,5 @@ class Storage:
 
 try:
     storage = Storage.load()
-except (OSError, pickle.UnpicklingError):
+except (OSError, pickle.UnpicklingError, ModuleNotFoundError):
     storage = Storage()
