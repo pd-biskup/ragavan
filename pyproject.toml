@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ragavan"
 version = "0.1.0"
-description = ""
+description = "MTG limited data analysis tool"
 authors = ["AcidBishop"]
 readme = "README.md"
 
