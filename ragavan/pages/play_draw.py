@@ -1,7 +1,6 @@
-"""Play/draw advantage graph component"""
-from dash import callback, dcc, html
+import plotly.express as px
+from dash import callback, dcc, html, register_page
 from dash.dependencies import Input, Output
-from plotly import express as px
 from polars import col
 
 from ragavan.common import (
@@ -12,9 +11,23 @@ from ragavan.common import (
 )
 from ragavan.storage import storage
 
+# from ragavan.ui import play_draw
 
-def layout():
-    """Create component"""
+register_page(__name__)
+
+# layout = play_draw.layout
+
+
+def layout(expansions=None, event_types=None):
+    print(f"l: {expansions}")
+    if expansions:
+        expansions = expansions.split(",")
+    else:
+        expansions = default_selected_expansions
+    if event_types:
+        event_types = event_types.split(",")
+    else:
+        event_types = default_selected_event_types
     return html.Div(
         children=[
             html.Div(
@@ -22,13 +35,13 @@ def layout():
                     dcc.Checklist(
                         id="play-draw-expansions-input",
                         options=default_expansions,
-                        value=default_selected_expansions,
+                        value=expansions,
                         inline=True,
                     ),
                     dcc.Checklist(
                         id="play-draw-event-types-input",
                         options=default_event_types,
-                        value=default_selected_event_types,
+                        value=event_types,
                         inline=True,
                     ),
                     dcc.Checklist(
@@ -40,17 +53,27 @@ def layout():
                 ],
                 className="controls-container",
             ),
-            html.Div(id="play-draw-graph", className="graph-container"),
+            html.Div(
+                id="play-draw-graph",
+                className="graph-container",
+                children=[play_draw_graph(expansions, event_types)],
+            ),
         ],
         className="app-container",
     )
 
 
 @callback(
-    Output("play-draw-graph", "children"),
+    Output("url", "search"),
     Input("play-draw-expansions-input", "value"),
     Input("play-draw-event-types-input", "value"),
+    Input("play-draw-full-input", "value"),
 )
+def update(expansions, event_types, full):
+    print(expansions)
+    return f"?expansions={','.join(expansions)}&event_types={','.join(event_types)}"
+
+
 def play_draw_graph(expansions, event_types):
     """Re-generate graph when parameters change"""
     data = storage.get_play_draw()
@@ -67,16 +90,3 @@ def play_draw_graph(expansions, event_types):
     )
     fig.update_traces(textposition="top right")
     return dcc.Graph(figure=fig)
-
-
-@callback(
-    Output("play-draw-expansions-input", "options"),
-    Output("play-draw-event-types-input", "options"),
-    Input("play-draw-full-input", "value"),
-)
-def show_all(full):
-    """Switch controls to and from full mode"""
-    if full:
-        filters = storage.get_filters()
-        return (filters["expansions"], filters["formats"])
-    return (default_expansions, default_event_types)

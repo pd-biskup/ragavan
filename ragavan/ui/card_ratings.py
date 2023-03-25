@@ -2,12 +2,11 @@
 from datetime import datetime, timedelta
 
 import polars as pl
-from dash import dcc, html
+from dash import callback, dcc, html
 from dash.dependencies import Input, Output
 from plotly import express as px
 from polars import col, lit
 
-from ragavan.app import app
 from ragavan.common import color_map, default_event_types, default_expansions
 from ragavan.storage import storage
 
@@ -73,7 +72,7 @@ def layout():
     )
 
 
-@app.callback(
+@callback(
     Output("card-ratings-graph", "children"),
     Input("card-ratings-expansion-input", "value"),
     Input("card-ratings-event-type-input", "value"),
@@ -135,7 +134,7 @@ def card_ratings_graph(expansion, event_type, start_date, end_date, colors, filt
     return dcc.Graph(figure=fig)
 
 
-@app.callback(
+@callback(
     Output("card-ratings-date-range-input", "start_date"),
     Output("card-ratings-date-range-input", "end_date"),
     Output("card-ratings-filter-input", "options"),
@@ -151,7 +150,7 @@ def update_controls(expansion, event_type):
     return (start_date, end_date, names)
 
 
-@app.callback(
+@callback(
     Output("card-ratings-expansion-input", "options"),
     Output("card-ratings-event-type-input", "options"),
     Input("card-ratings-full-input", "value"),

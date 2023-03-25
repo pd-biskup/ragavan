@@ -20,3 +20,40 @@ body {
 .dropdown {
     width: 200px;
 }
+
+.nav {
+    display: flex;
+    flex-flow: row nowrap;
+    text-align: center;
+    list-style-type: none;
+}
+
+.navbutton {
+    display: inline-block;
+    height: 50px;
+    padding: 0 30px;
+    color: #555;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 50px;
+    letter-spacing: .1rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 1px solid #bbb;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.navbutton a {
+    color: #555;
+    text-decoration: none;
+}
+
+.navbutton:hover {
+    color: #333;
+    border-color: #888;
+    outline: 0;
+}

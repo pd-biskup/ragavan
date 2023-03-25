@@ -1,12 +1,11 @@
 """Color ratings graph component"""
 from datetime import datetime, timedelta
 
-from dash import dcc, html
+from dash import callback, dcc, html
 from dash.dependencies import Input, Output
 from plotly import express as px
 from polars import col, concat, lit
 
-from ragavan.app import app
 from ragavan.common import color_pairs_full, default_event_types, default_expansions
 from ragavan.storage import storage
 
@@ -61,7 +60,7 @@ def layout():
     )
 
 
-@app.callback(
+@callback(
     Output("color-ratings-graph", "children"),
     Input("color-ratings-expansion-input", "value"),
     Input("color-ratings-event-type-input", "value"),
@@ -100,7 +99,7 @@ def color_ratings_graph(expansion, event_type, start_date, end_date, combine_spl
     return dcc.Graph(figure=fig)
 
 
-@app.callback(
+@callback(
     Output("color-ratings-date-range-input", "start_date"),
     Output("color-ratings-date-range-input", "end_date"),
     Input("color-ratings-expansion-input", "value"),
@@ -113,7 +112,7 @@ def date_range(expansion, event_type):
     return (start_date, end_date)
 
 
-@app.callback(
+@callback(
     Output("color-ratings-expansion-input", "options"),
     Output("color-ratings-event-type-input", "options"),
     Input("color-ratings-full-input", "value"),
