@@ -84,6 +84,7 @@ def layout():
 )
 def card_ratings_graph(expansion, event_type, start_date, end_date, colors, filters):
     """Re-generate graph when parameters change"""
+    # fetch data
     data = storage.get_card_ratings(
         expansion,
         event_type,
@@ -91,47 +92,72 @@ def card_ratings_graph(expansion, event_type, start_date, end_date, colors, filt
         datetime.strptime(end_date, "%Y-%m-%d"),
         colors,
     )
+
+    # filter data
     data = (
         data.drop_nulls("ever_drawn_win_rate")
         .filter(col("ever_drawn_game_count") > 100)
         .sort("ever_drawn_win_rate")
-        .with_columns(
-            col("ever_drawn_win_rate")
-            .apply(lambda x: f"{x*100:.2f}%")
-            .alias("gih_winrate")
-        )
     )
+
+    if colors:
+        full_data = storage.get_card_ratings(
+            expansion,
+            event_type,
+            datetime.strptime(start_date, "%Y-%m-%d"),
+            datetime.strptime(end_date, "%Y-%m-%d"),
+            None,
+        )
+        global_avg = full_data["ever_drawn_win_rate"].mean()
+    else:
+        global_avg = data["ever_drawn_win_rate"].mean()
+    avg_diff = global_avg - 0.5
+
+    # normalize and format winrate
+    data = data.with_columns(
+        col("ever_drawn_win_rate")
+        .apply(lambda x: max(x - avg_diff, 0))
+        .alias("normalized_gih")
+    ).with_columns(
+        col("normalized_gih").apply(lambda x: f"{x*100:.2f}%").alias("formatted_gih")
+    )
+
+    # calculate graph x range
+    height = len(data) * 16
+    avg = data["normalized_gih"].mean()
+    diff = data["normalized_gih"].tail(1)[0] - avg
+    x_min = avg - diff - 0.01
+    x_max = avg + diff + 0.01
+
+    # mark selected rows
     data = data.with_columns(
         pl.when(col("name").is_in(filters))
         .then(lit("selected"))
         .otherwise(col("rarity"))
         .alias("rarity")
     )
-    height = len(data) * 16
-    avg = data["ever_drawn_win_rate"].mean()
-    diff = data["ever_drawn_win_rate"].tail(1)[0] - avg
-    x_min = avg - diff - 0.01
-    x_max = avg + diff + 0.01
+
     fig = px.bar(
         data.to_pandas(),
         y="name",
-        x="ever_drawn_win_rate",
+        x="normalized_gih",
         orientation="h",
         color="rarity",
         color_discrete_map=color_map,
         range_x=(x_min, x_max),
-        text="gih_winrate",
+        text="formatted_gih",
         hover_name="name",
         hover_data={
             "name": False,
             "ever_drawn_win_rate": False,
             "rarity": False,
-            "gih_winrate": True,
+            "normalized_gih": False,
+            "formatted_gih": True,
         },
     )
     fig.update_layout(yaxis_categoryorder="total ascending", height=height)
     fig.update_traces(textfont_size=12, textposition="outside")
-    fig.add_vline(x=avg)
+    fig.add_vline(x=0.5)
     return dcc.Graph(figure=fig)
 
 
