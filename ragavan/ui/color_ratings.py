@@ -90,6 +90,8 @@ def color_ratings_graph(expansion, event_type, start_date, end_date, combine_spl
     if only_pairs:
         data = data.filter(col("color_name").is_in(color_pairs_full))
     data = data.with_columns((col("wins") / col("games")).alias("winrate"))
+    if data.is_empty():
+        return "Not enough data"
     min_y = data["winrate"].min() - 0.01
     max_y = data["winrate"].max() + 0.01
     data = data.to_pandas()

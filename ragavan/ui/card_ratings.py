@@ -105,6 +105,9 @@ def card_ratings_graph(expansion, event_type, start_date, end_date, colors, filt
         .sort("ever_drawn_win_rate")
     )
 
+    if data.is_empty():
+        return "Not enough data"
+
     if colors:
         full_data = storage.get_card_ratings(
             expansion,
