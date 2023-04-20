@@ -14,6 +14,7 @@ from ragavan.common import (
     default_expansions,
     optimal_date_range,
 )
+from ragavan.first_day import get_first_day
 from ragavan.storage import storage
 
 
@@ -27,7 +28,7 @@ def layout():
                 children=[
                     dcc.DatePickerRange(
                         id="card-ratings-date-range-input",
-                        start_date=storage.get_first_day(
+                        start_date=get_first_day(
                             default_expansions[0], default_event_types[0]
                         )
                         + timedelta(weeks=2),
@@ -178,7 +179,7 @@ def card_ratings_graph(expansion, event_type, start_date, end_date, colors, filt
 )
 def update_controls(expansion, event_type):
     """Change controls values when selected format changes"""
-    first_day = storage.get_first_day(expansion, event_type)
+    first_day = get_first_day(expansion, event_type)
     start_date, end_date = optimal_date_range(first_day)
     data = storage.get_card_ratings(expansion, event_type, start_date, end_date)
     names = list(data.get_column("name"))
