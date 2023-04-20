@@ -1,5 +1,6 @@
 """Common utils module"""
-from datetime import date
+from datetime import date, datetime, timedelta
+from typing import Tuple
 
 import polars as pl
 from dash.dash_table import DataTable
@@ -9,6 +10,19 @@ from plotly.colors import qualitative as palettes
 def format_date(date_: date) -> str:
     """Format date object to unambigous string"""
     return date_.strftime("%Y-%m-%d")
+
+
+def optimal_date_range(first_day: date) -> Tuple[date, date]:
+    """Choose best date range from first day of format"""
+    end_date = datetime.now().date()
+    season_length = end_date - first_day
+    if season_length >= timedelta(weeks=4):
+        start_date = first_day + timedelta(weeks=2)
+    elif season_length >= timedelta(weeks=2):
+        start_date = first_day + timedelta(weeks=1)
+    else:
+        start_date = first_day
+    return (start_date, end_date)
 
 
 beginning_date = date(2019, 1, 1)

@@ -8,7 +8,12 @@ from plotly import express as px
 from polars import col, lit
 
 from ragavan.app import app
-from ragavan.common import color_map, default_event_types, default_expansions
+from ragavan.common import (
+    color_map,
+    default_event_types,
+    default_expansions,
+    optimal_date_range,
+)
 from ragavan.storage import storage
 
 
@@ -170,8 +175,8 @@ def card_ratings_graph(expansion, event_type, start_date, end_date, colors, filt
 )
 def update_controls(expansion, event_type):
     """Change controls values when selected format changes"""
-    start_date = storage.get_first_day(expansion, event_type) + timedelta(weeks=2)
-    end_date = datetime.now().date()
+    first_day = storage.get_first_day(expansion, event_type)
+    start_date, end_date = optimal_date_range(first_day)
     data = storage.get_card_ratings(expansion, event_type, start_date, end_date)
     names = list(data.get_column("name"))
     return (start_date, end_date, names)

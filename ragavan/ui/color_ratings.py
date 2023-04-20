@@ -7,7 +7,12 @@ from plotly import express as px
 from polars import col, concat, lit
 
 from ragavan.app import app
-from ragavan.common import color_pairs_full, default_event_types, default_expansions
+from ragavan.common import (
+    color_pairs_full,
+    default_event_types,
+    default_expansions,
+    optimal_date_range,
+)
 from ragavan.storage import storage
 
 
@@ -108,8 +113,8 @@ def color_ratings_graph(expansion, event_type, start_date, end_date, combine_spl
 )
 def date_range(expansion, event_type):
     """Change date range control values when selected format changes"""
-    start_date = storage.get_first_day(expansion, event_type) + timedelta(weeks=2)
-    end_date = datetime.now().date()
+    first_day = storage.get_first_day(expansion, event_type)
+    start_date, end_date = optimal_date_range(first_day)
     return (start_date, end_date)
 
 
