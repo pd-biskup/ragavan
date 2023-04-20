@@ -1,6 +1,6 @@
 """Caching system for 17lands data"""
 import pickle
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from logging import getLogger
 from typing import Any, Optional
 
@@ -153,35 +153,24 @@ class Storage:
 
     def _find_first_day(self, expansion: str, event_type: str) -> Optional[date]:
         start_date = beginning_date
-        end_date = start_date.replace(year=start_date.year + 1)
+        end_date = datetime.now().date()
+        diff = end_date - start_date
         ratings = storage.get_color_ratings(expansion, event_type, start_date, end_date)
-        while not ratings.filter(pl.col("color_name") == "All Decks")["games"][0]:
-            if end_date > date.today():
-                return None
-            start_date = end_date
-            end_date = start_date.replace(year=start_date.year + 1)
+        if not ratings.filter(pl.col("color_name") == "All Decks")["games"][0]:
+            return None
+        while True:
             ratings = storage.get_color_ratings(
                 expansion, event_type, start_date, end_date
             )
-
-        end_date = start_date.replace(month=start_date.month + 1)
-        ratings = storage.get_color_ratings(expansion, event_type, start_date, end_date)
-        while not ratings.filter(pl.col("color_name") == "All Decks")["games"][0]:
-            start_date = end_date
-            end_date = start_date.replace(month=start_date.month + 1)
-            ratings = storage.get_color_ratings(
-                expansion, event_type, start_date, end_date
-            )
-
-        end_date = start_date.replace(day=start_date.day + 1)
-        ratings = storage.get_color_ratings(expansion, event_type, start_date, end_date)
-        while not ratings.filter(pl.col("color_name") == "All Decks")["games"][0]:
-            start_date = end_date
-            end_date = start_date.replace(day=start_date.day + 1)
-            ratings = storage.get_color_ratings(
-                expansion, event_type, start_date, end_date
-            )
-        return end_date
+            diff = (diff / 2) + timedelta(hours=6)
+            if ratings.filter(pl.col("color_name") == "All Decks")["games"][0]:
+                if diff <= timedelta(days=1):
+                    return end_date
+                end_date -= diff
+            else:
+                if diff <= timedelta(days=1):
+                    return end_date + timedelta(days=1)
+                end_date += diff
 
     def get_first_day(self, expansion: str, event_type: str) -> Optional[date]:
         """Return first day of format from cache or find it by downloading data from 17lands"""
