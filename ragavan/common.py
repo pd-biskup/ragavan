@@ -31,8 +31,8 @@ color_map = {
     "selected": palettes.Plotly[2],
 }
 
-default_expansions = ["ONE", "BRO", "DMU", "SNC", "NEO", "VOW", "MID"]
-default_selected_expansions = ["ONE", "BRO", "DMU", "SNC", "NEO", "VOW", "MID"]
+default_expansions = ["MOM", "ONE", "BRO", "DMU", "SNC", "NEO", "VOW", "MID"]
+default_selected_expansions = ["MOM", "ONE", "BRO", "DMU", "SNC", "NEO", "VOW", "MID"]
 default_event_types = [
     "PremierDraft",
     "QuickDraft",
