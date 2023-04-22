@@ -1,5 +1,5 @@
 """Color ratings graph component"""
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from dash import dcc, html
 from dash.dependencies import Input, Output
@@ -19,6 +19,10 @@ from ragavan.storage import storage
 
 def layout():
     """Create component"""
+    expansion = default_expansions[0]
+    event_type = default_event_types[0]
+    first_day = get_first_day(expansion, event_type)
+    start_date, end_date = optimal_date_range(first_day)
     return html.Div(
         children=[
             html.Div(
@@ -26,17 +30,14 @@ def layout():
                 children=[
                     dcc.DatePickerRange(
                         id="color-ratings-date-range-input",
-                        start_date=get_first_day(
-                            default_expansions[0], default_event_types[0]
-                        )
-                        + timedelta(weeks=2),
-                        end_date=datetime.now().date(),
+                        start_date=start_date,
+                        end_date=end_date,
                     ),
                     dcc.Dropdown(
                         id="color-ratings-expansion-input",
                         className="dropdown",
                         options=default_expansions,
-                        value=default_expansions[0],
+                        value=expansion,
                         searchable=False,
                         clearable=False,
                     ),
