@@ -20,6 +20,8 @@ def optimal_date_range(first_day: date) -> Tuple[date, date]:
         start_date = first_day + timedelta(weeks=2)
     elif season_length >= timedelta(weeks=2):
         start_date = first_day + timedelta(weeks=1)
+    elif season_length >= timedelta(weeks=1):
+        start_date = first_day + timedelta(days=2)
     else:
         start_date = first_day
     return (start_date, end_date)
