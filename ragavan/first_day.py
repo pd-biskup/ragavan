@@ -246,9 +246,24 @@ def _print_generated():
     print(_generate_first_days(_update_first_days(_first_days)))
 
 
-def get_first_day(expansion: str, event_type: str) -> date | None:
+def get_first_day(
+    expansion: str | list[str], event_type: str | list[str]
+) -> date | None:
     """Get hard-coded first day of format"""
-    if (expansion, event_type) in _first_days:
-        log.info("Using hard-coded first day for (%s, %s)", expansion, event_type)
-        return _first_days[(expansion, event_type)]
-    return storage.get_first_day(expansion, event_type)
+    if isinstance(expansion, str) and isinstance(event_type, str):
+        if (expansion, event_type) in _first_days:
+            log.info("Using hard-coded first day for (%s, %s)", expansion, event_type)
+            first_day = _first_days[(expansion, event_type)]
+        else:
+            first_day = storage.get_first_day(expansion, event_type)
+    else:
+        if isinstance(expansion, str):
+            expansion = [expansion]
+        if isinstance(event_type, str):
+            event_type = [event_type]
+        dates = []
+        for exp in expansion:
+            for event in event_type:
+                dates.append(get_first_day(exp, event))
+        first_day = min(dates)
+    return first_day
