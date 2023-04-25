@@ -5,7 +5,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 
 from ragavan.app import app
-from ragavan.ui import card_ratings, color_ratings, play_draw, testing
+from ragavan.ui import card_ratings_tabs, color_ratings, play_draw, testing
 
 
 def layout() -> Any:
@@ -41,6 +41,6 @@ def tabs_content(tab: str) -> Any:
         case "color_ratings":
             return color_ratings.layout()
         case "card_ratings":
-            return card_ratings.layout()
+            return card_ratings_tabs.layout()
         case "testing":
             return testing.layout()

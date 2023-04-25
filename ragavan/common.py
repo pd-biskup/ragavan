@@ -12,6 +12,11 @@ def format_date(date_: date) -> str:
     return date_.strftime("%Y-%m-%d")
 
 
+def parse_date(date_: str) -> date:
+    """Parse date string"""
+    return datetime.strptime(date_, "%Y-%m-%d").date()
+
+
 def optimal_date_range(first_day: date) -> Tuple[date, date]:
     """Choose best date range from first day of format"""
     end_date = datetime.now().date()

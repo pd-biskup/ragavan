@@ -20,3 +20,8 @@ body {
 .dropdown {
     width: 200px;
 }
+
+.horizontal-container {
+    display: flex;
+    justify-content: space-around;
+}
