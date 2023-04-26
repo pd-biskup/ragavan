@@ -9,6 +9,7 @@ from platformdirs import user_cache_path
 
 from ragavan.common import beginning_date, format_date
 from ragavan.seventeen_lands import (
+    download_card_evaluation_metagame,
     download_card_ratings,
     download_color_ratings,
     download_filters,
@@ -128,19 +129,27 @@ class Storage:
             self.save()
         return self._card_ratings[key].data
 
-    # def get_card_evaluation_metagame(
-    #     self, expansion: str, event_type: str, start_date: date, end_date: date
-    # ) -> pl.DataFrame:
-    #     self.purge()
-    #     key = f"{expansion}-{event_type}-{format_date(start_date)}-{format_date(end_date)}"
-    #     if key not in self._card_evaluation_metagame:
-    #         self._card_evaluation_metagame[key] = StorageCell(
-    #             download_card_evaluation_metagame(
-    #                 expansion, event_type, start_date, end_date
-    #             )
-    #         )
-    #         self.save()
-    #     return self._card_evaluation_metagame[key].data
+    def get_card_evaluation_metagame(
+        self,
+        expansion: str,
+        event_type: str,
+        colors: str | None,
+        rarity: str | None,
+        start_date: date,
+        end_date: date,
+    ) -> pl.DataFrame:
+        """Return card evaluation metagame from cache or download from 17lands if not found"""
+        self.purge()
+        log.info("retrieving card evaluation metagame")
+        key = f"{expansion}-{event_type}-{colors}-{rarity}-{format_date(start_date)}-{format_date(end_date)}"
+        if key not in self._card_evaluation_metagame:
+            self._card_evaluation_metagame[key] = StorageCell(
+                download_card_evaluation_metagame(
+                    expansion, event_type, colors, rarity, start_date, end_date
+                )
+            )
+            self.save()
+        return self._card_evaluation_metagame[key].data
 
     def get_play_draw(self) -> pl.DataFrame:
         """Return play/draw advantage data from cache or download from 17lands if not found"""
