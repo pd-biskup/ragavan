@@ -1,10 +1,9 @@
-"""Color ratings graph component"""
+"""Color ratings evolution graph component"""
 from datetime import datetime, timedelta
 
 from dash import dcc, html
 from dash.dependencies import Input, Output
 from plotly import express as px
-from plotly import graph_objects as go
 from polars import Boolean, col, concat, lit
 
 from ragavan.app import app
