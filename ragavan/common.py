@@ -79,3 +79,16 @@ color_pairs_full = [
     "Izzet (UR)",
     "Boros (RW)",
 ]
+
+color_pairs_color_map = {
+    "Azorius (WU)": "#bde7ff",
+    "Dimir (UB)": "#006097",
+    "Rakdos (BR)": "#9c2714",
+    "Gruul (RG)": "#c7af31",
+    "Selesnya (GW)": "#a1f3ae",
+    "Orzhov (WB)": "#f1eed3",
+    "Golgari (BG)": "#148827",
+    "Simic (GU)": "#21cdc3",
+    "Izzet (UR)": "#9b34cb",
+    "Boros (RW)": "#ffa99b",
+}

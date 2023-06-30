@@ -3,7 +3,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 
 from ragavan.app import app
-from ragavan.ui import card_ratings, card_ratings_difference
+from ragavan.ui import color_ratings, color_ratings_evolution
 
 
 def layout():
@@ -16,29 +16,30 @@ def layout():
                     dcc.Tabs(
                         id="tabs-small",
                         children=[
-                            dcc.Tab(label="Card Ratings", value="card_ratings"),
+                            dcc.Tab(label="Color Ratings", value="color_ratings"),
                             dcc.Tab(
-                                label="Ratings Differnce", value="ratings_difference"
+                                label="Ratings Evolution",
+                                value="color_ratings_evolution",
                             ),
                         ],
-                        value="card_ratings",
+                        value="color_ratings",
                     )
                 ],
             ),
-            html.Div(id="card-ratings-tabs-content"),
+            html.Div(id="color-ratings-tabs-content"),
         ]
     )
 
 
 @app.callback(
-    Output("card-ratings-tabs-content", "children"), Input("tabs-small", "value")
+    Output("color-ratings-tabs-content", "children"), Input("tabs-small", "value")
 )
 def tabs_content(tab: str):
     """Change content of the app based on selected tab"""
     match tab:
-        case "card_ratings":
-            return card_ratings.layout()
-        case "ratings_difference":
-            return card_ratings_difference.layout()
+        case "color_ratings":
+            return color_ratings.layout()
+        case "color_ratings_evolution":
+            return color_ratings_evolution.layout()
         case _:
             return ""
